@@ -202,13 +202,6 @@ public class IconTextView extends IconView {
 		if (bottom != null) {
 			height += iconBottom.mHeight;
 		}
-
-		// height = mxh()
-		// + getPaddingTop() + getPaddingBottom() + iconPaddingTop
-		// + iconPaddingBottom;
-		// width = mxw()
-		// + getPaddingLeft() + getPaddingRight() + iconPaddingLeft
-		// + iconPaddingRight;
 	}
 
 	private float dx, dy;
