@@ -29,7 +29,7 @@ public class SvgPathView extends View {
 	protected float mDensity;
 	protected final float size = 120;
 	protected int scaleType = SCALE_CENTER;
-	protected float width, height;
+	private float width, height;
 
 
 	protected static final int SCALE_CENTER = 0;
@@ -41,6 +41,7 @@ public class SvgPathView extends View {
 		protected Paint mPaint;
 		protected Matrix mMatrix;
 		protected RectF mRectF;
+		protected RectF mRectFTransformed;
 		protected float scale = 1.0f;
 		protected float mWidth = 0, mHeight = 0;
 		protected String icon;
@@ -52,6 +53,7 @@ public class SvgPathView extends View {
 			mMatrix = new Matrix();
 			mPath = new Path();
 			mRectF = new RectF();
+			mRectFTransformed = new RectF();
 		}
 		protected void computeDatas() {
 			computeDatas(scaleType);
@@ -99,6 +101,7 @@ public class SvgPathView extends View {
 			mMatrix.setTranslate(-mRectF.left, -mRectF.top);
 			mMatrix.postScale(scale, scale);
 			mPath.transform(mMatrix);
+			mPath.computeBounds(mRectFTransformed, true);
 			mWidth=width;
 			mHeight=height;
 		}

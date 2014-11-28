@@ -166,8 +166,8 @@ public class IconCheckBox extends SvgPathView implements
 		canvas.drawPath(unCheckedDataSet.mPath, unCheckedDataSet.mPaint);
 		checkedDataSet.mPaint.setAlpha((int) (255 * mCheckedProgress));
 		canvas.save();
-		scaleMatrix.setScale(mCheckedProgress, mCheckedProgress, width / 2,
-				height / 2);
+		scaleMatrix.setScale(mCheckedProgress, mCheckedProgress, checkedDataSet.mWidth / 2,
+				checkedDataSet.mHeight / 2);
 		canvas.concat(scaleMatrix);
 		canvas.drawPath(checkedDataSet.mPath, checkedDataSet.mPaint);
 		canvas.restore();
@@ -245,7 +245,7 @@ public class IconCheckBox extends SvgPathView implements
 
 	@Override
 	protected void onMeasure(int wms, int hms) {
-		setMeasuredDimension((int) width + 1, (int) height + 1);
+		setMeasuredDimension((int) checkedDataSet.mWidth + 1, (int) checkedDataSet.mHeight + 1);
 	}
 
 	@Override

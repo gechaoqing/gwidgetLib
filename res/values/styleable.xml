@@ -87,5 +87,13 @@
         <attr name="textColor" format="reference|color"/>
         <attr name="textSize" format="dimension"/>
     </declare-styleable>
+    <declare-styleable name="rotateIconView">
+        <attr name="duration" format="integer"/>
+        <attr name="repeat" format="integer"/>
+        <attr name="rotateDir">
+            <enum name="clockwise" value="0"/>
+            <enum name="counterclockwise" value="1"/>
+        </attr>
+    </declare-styleable>
 
 </resources>

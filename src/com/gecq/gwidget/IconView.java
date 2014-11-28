@@ -48,6 +48,10 @@ public class IconView extends SvgPathView {
 		pathDataSet.icon=icon;
 		pathDataSet.setIconColor(iconColor, Color.BLACK, getDrawableState());
 	}
+	
+	protected PathDataSet getDataSet(){
+		return this.pathDataSet;
+	}
 
 	public void setIconPath(String path) {
 		pathDataSet.icon=path;
@@ -102,7 +106,7 @@ public class IconView extends SvgPathView {
 		canvas.restore();
 	}
 	
-	private float dx=0,dy=0;
+	protected float dx=0,dy=0;
 
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -110,7 +114,8 @@ public class IconView extends SvgPathView {
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         int widthSize = MeasureSpec.getSize(widthMeasureSpec);
         int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-
+        float width = pathDataSet.mWidth;
+        float height = pathDataSet.mHeight;
         if (widthMode == MeasureSpec.EXACTLY) {
         	if(width<widthSize)
         	{
