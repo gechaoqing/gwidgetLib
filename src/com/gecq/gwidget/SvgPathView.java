@@ -32,9 +32,9 @@ public class SvgPathView extends View {
 	private float width, height;
 
 
-	protected static final int SCALE_CENTER = 0;
-	protected static final int SCALE_WITH_WIDTH = 1;
-	protected static final int SCALE_WITH_HEIGHT = 2;
+	public static final int SCALE_CENTER = 0;
+	public static final int SCALE_WITH_WIDTH = 1;
+	public static final int SCALE_WITH_HEIGHT = 2;
 
 	protected class PathDataSet {
 		protected Path mPath;
@@ -68,7 +68,10 @@ public class SvgPathView extends View {
 			return this.iconColor;
 		}
 
-		protected void computeDatas(int scaleType) {
+		protected void computeDatas(int scaleT) {
+			if(scaleType!=scaleT){
+				scaleType=scaleT;
+			}
 			if(icon==null){
 				return;
 			}
@@ -119,6 +122,9 @@ public class SvgPathView extends View {
 
 	public SvgPathView(Context context) {
 		super(context);
+		mDensity = context.getResources().getDisplayMetrics().density;
+		this.iconSize=12.0f * mDensity;
+		init();
 	}
 
 	private void getAttrs(Context context, AttributeSet attrs) {
@@ -137,6 +143,15 @@ public class SvgPathView extends View {
 	private void init() {
 		mPareser = new SvgParserHelper();
 		width = height = size * iconSize;
+	}
+	
+	protected void setIconSize(float iconSize){
+		this.iconSize = iconSize*mDensity*0.01f;
+		width = height = size * this.iconSize;
+	}
+	
+	protected void setScaleType(int scaleType){
+		this.scaleType=scaleType;
 	}
 
 	protected Paint roundPaint(Paint mPaint) {

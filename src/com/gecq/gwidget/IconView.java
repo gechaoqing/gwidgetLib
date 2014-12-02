@@ -16,13 +16,16 @@ import android.util.AttributeSet;
 public class IconView extends SvgPathView {
 
 	private PathDataSet pathDataSet;
+	private Runnable invalidate;
 	public IconView(Context context) {
 		super(context);
+		getInvalidate();
 		pathDataSet= new PathDataSet();
 	}
 
 	public IconView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
+		getInvalidate();
 		pathDataSet= new PathDataSet();
 		getAttrs(context, attrs);
 		draw();
@@ -30,9 +33,29 @@ public class IconView extends SvgPathView {
 
 	public IconView(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		getInvalidate();
 		pathDataSet= new PathDataSet();
 		getAttrs(context, attrs);
 		draw();
+	}
+	
+	private Runnable getInvalidate(){
+		if(this.invalidate==null){
+			invalidate=new Runnable() {
+				
+				@Override
+				public void run() {
+					requestLayout();
+					invalidate();
+				}
+			};
+		}
+		return invalidate;
+	}
+	
+	private void invalidateRun(){
+		removeCallbacks(invalidate);
+		post(invalidate);
 	}
 	
 	private void getAttrs(Context context, AttributeSet attrs){
@@ -66,25 +89,30 @@ public class IconView extends SvgPathView {
 	public void setIconColor(int resid){
 		ColorStateList colors=getResources().getColorStateList(resid);
 		pathDataSet.mPaint.setColor(colors.getColorForState(getDrawableState(), Color.BLACK));
-		invalidate();
+		invalidateRun();
 	}
 	public ColorStateList getIconColor(){
 		return pathDataSet.getIconColor();
 	}
 	public void setIconColor(String color){
 		pathDataSet.mPaint.setColor(C(color));
-		invalidate();
+		invalidateRun();
+	}
+	
+	public void setIconSize(float iconSize){
+		super.setIconSize(iconSize);
+		draw();
 	}
 	
 	public void setScaleType(int scaleType){
-		this.scaleType=scaleType;
-		draw();
+		pathDataSet.computeDatas(scaleType);
+		invalidateRun();
 	}
 	
 	private void draw(){
 		pathDataSet.computeDatas();
-		requestLayout();
-		invalidate();
+		
+		invalidateRun();
 	}
 
 	@Override
@@ -94,7 +122,7 @@ public class IconView extends SvgPathView {
         if(color!=null&&color.isStateful())
         {
         	pathDataSet.mPaint.setColor(color.getColorForState(getDrawableState(), Color.BLACK));
-        	invalidate();
+        	invalidateRun();
         }
 	}
 
@@ -123,6 +151,12 @@ public class IconView extends SvgPathView {
         	}
             width = widthSize;
         }
+        
+        float trw=pathDataSet.mRectFTransformed.width();
+        if(trw<width){
+        	dx=(width-trw)/2;
+        }
+        
         if(heightMode == MeasureSpec.EXACTLY){
         	if(height<heightSize)
         	{
@@ -131,9 +165,13 @@ public class IconView extends SvgPathView {
         	height=heightSize;
         }
         
+        float trh=pathDataSet.mRectFTransformed.height();
+        if(trh<height){
+        	dy=(height-trh)/2;
+        }
+        
         width+=getPaddingLeft()+getPaddingRight();
         height+=getPaddingTop()+getPaddingBottom();
 		setMeasuredDimension((int)(width+0.5f), (int)(height+0.5f));
 	}
-
 }
