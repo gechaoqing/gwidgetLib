@@ -3,9 +3,6 @@ package com.gecq.gwidget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -17,7 +14,6 @@ import android.widget.ImageView;
 public class BlurImageView extends ImageView {
 
 	private boolean DEBUG = false;
-	private Paint mPaint;
 	private Bitmap bit;
 	private float radius = 40;
 
@@ -37,27 +33,27 @@ public class BlurImageView extends ImageView {
 
 	public BlurImageView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		getAttrs(context,attrs);
+		getAttrs(context, attrs);
 		init();
 	}
 
 	public BlurImageView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		getAttrs(context,attrs);
+		getAttrs(context, attrs);
 		init();
 	}
-	
-	private void getAttrs(Context context, AttributeSet attrs){
-		TypedArray ta=context.obtainStyledAttributes(attrs,R.styleable.blurImageView);
-		this.radius=ta.getFloat(R.styleable.blurImageView_blurRadius, 40);
-		this.hRadius=this.radius;
-		this.vRadius=this.radius;
+
+	private void getAttrs(Context context, AttributeSet attrs) {
+		TypedArray ta = context.obtainStyledAttributes(attrs,
+				R.styleable.blurImageView);
+		this.radius = ta.getFloat(R.styleable.blurImageView_blurRadius, 40);
+		this.hRadius = this.radius;
+		this.vRadius = this.radius;
 		ta.recycle();
 	}
 
 	private void init() {
-		mPaint = new Paint();
-		imageChanged();
+		imageChanged(getDrawable());
 	}
 
 	@Override
@@ -65,13 +61,13 @@ public class BlurImageView extends ImageView {
 		super.setImageBitmap(bm);
 		this.bit = bm;
 		if (DEBUG) {
-			bit = BoxBlurFilter(bm);
-			postInvalidate();
+			Bitmap temp = BoxBlurFilter(bm);
+			super.setImageBitmap(temp);
 		} else {
-			if(blurTask!=null){
+			if (blurTask != null) {
 				blurTask.cancel(true);
 			}
-			blurTask=new BitmapBlurTask(bit);
+			blurTask = new BitmapBlurTask(bm);
 			blurTask.execute(0);
 		}
 	}
@@ -79,59 +75,52 @@ public class BlurImageView extends ImageView {
 	@Override
 	public void setImageResource(int resId) {
 		super.setImageResource(resId);
-		imageChanged();
+		imageChanged(getDrawable());
 	}
 
 	@Override
 	public void setImageDrawable(Drawable drawable) {
 		super.setImageDrawable(drawable);
-		imageChanged();
+		imageChanged(drawable);
 	}
 
 	@Override
 	public void setImageURI(Uri uri) {
 		super.setImageURI(uri);
-		imageChanged();
+		imageChanged(getDrawable());
 	}
 
 	public void setBlurRadius(float radius) {
 		this.hRadius = radius;
 		this.vRadius = radius;
-		imageChanged();
+		if (blurTask != null) {
+			blurTask.cancel(true);
+		}
+		blurTask = new BitmapBlurTask(bit);
+		blurTask.execute(0);
 	}
 
-	private void imageChanged() {
-		Drawable d = getDrawable();
-		if (d != null&&d instanceof BitmapDrawable) {
+	private void imageChanged(Drawable d) {
+		if (d != null && d instanceof BitmapDrawable) {
 			bit = ((BitmapDrawable) d).getBitmap();
 			if (DEBUG) {
-				bit = BoxBlurFilter(bit);
-				postInvalidate();
+				Bitmap temp = BoxBlurFilter(bit);
+				super.setImageBitmap(temp);
 			} else {
-				if(blurTask!=null){
+				if (blurTask != null) {
 					blurTask.cancel(true);
 				}
-				blurTask=new BitmapBlurTask(bit);
+				blurTask = new BitmapBlurTask(bit);
 				blurTask.execute(0);
 			}
 		}
 	}
 
-	@Override
-	protected void onDraw(Canvas canvas) {
-		if (bit != null) {
-			canvas.save();
-			Matrix matrix = getImageMatrix();
-			if (matrix != null) {
-				canvas.concat(matrix);
-			}
-			canvas.drawBitmap(bit, getPaddingLeft(), getPaddingTop(), mPaint);
-			canvas.restore();
-		}
+	private void superSetImg(Bitmap draw) {
+		super.setImageBitmap(draw);
 	}
-	
-	private void blur(int[] in, int[] out, int width, int height,
-			float radius) {
+
+	private void blur(int[] in, int[] out, int width, int height, float radius) {
 		int widthMinus1 = width - 1;
 		int r = (int) radius;
 		int tableSize = 2 * r + 1;
@@ -227,6 +216,8 @@ public class BlurImageView extends ImageView {
 	}
 
 	protected Bitmap BoxBlurFilter(Bitmap bmp) {
+		if (bmp == null)
+			return null;
 		long start = System.currentTimeMillis();
 		int width = bmp.getWidth();
 		int height = bmp.getHeight();
@@ -264,8 +255,8 @@ public class BlurImageView extends ImageView {
 
 		@Override
 		protected void onPostExecute(Bitmap bitmap) {
-			bit=bitmap;
-			postInvalidate();
+			superSetImg(bitmap);
 		}
 	}
+
 }
