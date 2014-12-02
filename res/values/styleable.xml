@@ -43,7 +43,7 @@
         </attr>
     </declare-styleable>
     <declare-styleable name="blurImageView">
-        <attr name="blurRadius" format="float|dimension"/>
+        <attr name="blurRadius" format="float"/>
     </declare-styleable>
     <declare-styleable name="svgView">
         <attr name="iconSize" format="dimension" />

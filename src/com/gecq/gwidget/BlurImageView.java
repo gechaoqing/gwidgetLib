@@ -49,7 +49,7 @@ public class BlurImageView extends ImageView {
 	
 	private void getAttrs(Context context, AttributeSet attrs){
 		TypedArray ta=context.obtainStyledAttributes(attrs,R.styleable.blurImageView);
-		this.radius=ta.getDimension(R.styleable.blurImageView_blurRadius, 40);
+		this.radius=ta.getFloat(R.styleable.blurImageView_blurRadius, 40);
 		this.hRadius=this.radius;
 		this.vRadius=this.radius;
 		ta.recycle();
